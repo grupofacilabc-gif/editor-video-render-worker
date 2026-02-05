@@ -22,7 +22,6 @@ jobs:
             exit 1
           fi
           echo "job_dir=$JOB_DIR" >> $GITHUB_OUTPUT
-          echo "Job detectado: $JOB_DIR"
 
       - name: Validate job
         run: |
@@ -54,7 +53,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg jq fonts-dejavu-core
 
-      - name: Render video with text (FFmpeg)
+      - name: Render video with text (safe)
         run: |
           cd work
 
@@ -64,9 +63,11 @@ jobs:
           SIZE=$(jq -r '.text.fontSize' scene.json)
           COLOR=$(jq -r '.text.color' scene.json)
 
+          echo "$TEXT" > text.txt
+
           ffmpeg -y \
             -f lavfi -i color=c=black:s=720x1280:d=10:r=30 \
-            -vf "drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:text='${TEXT}':x=${X}:y=${Y}:fontsize=${SIZE}:fontcolor=${COLOR}" \
+            -vf "drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:textfile=text.txt:x=${X}:y=${Y}:fontsize=${SIZE}:fontcolor=${COLOR}" \
             -pix_fmt yuv420p \
             output.mp4
 
