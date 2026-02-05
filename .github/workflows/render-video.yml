@@ -53,16 +53,24 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg jq
 
-      - name: Render video with subtitles (SAFE)
-        run: |
-          cd work
-          TEXT=$(jq -r '.text.content' scene.json)
-          printf "1\n00:00:00,000 --> 00:00:10,000\n%s\n" "$TEXT" > text.srt
-          ffmpeg -y \
-            -f lavfi -i color=c=black:s=720x1280:d=10:r=30 \
-            -vf subtitles=text.srt \
-            -pix_fmt yuv420p \
-            output.mp4
+      
+          - name: Render video with subtitles (SAFE)
+         run: |
+    cd work
+
+    echo "Conteúdo do scene.json:"
+    cat scene.json
+
+    TEXT=$(jq -r '.text.content // "TEXTO NÃO DEFINIDO"' scene.json)
+    echo "Texto detectado: $TEXT"
+
+    printf "1\n00:00:00,000 --> 00:00:10,000\n%s\n" "$TEXT" > text.srt
+
+    ffmpeg -y \
+      -f lavfi -i color=c=black:s=720x1280:d=10:r=30 \
+      -vf subtitles=text.srt \
+      -pix_fmt yuv420p \
+      output.mp4
 
       - name: Upload video artifact
         uses: actions/upload-artifact@v4
