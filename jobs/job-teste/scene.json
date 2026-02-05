@@ -1,9 +1,16 @@
 {
   "version": "1.0",
   "canvas": {
-    "width": 360,
-    "height": 640,
+    "width": 720,
+    "height": 1280,
     "fps": 30,
     "duration": 10
+  },
+  "text": {
+    "content": "OFERTA IMPERDÍVEL",
+    "x": 360,
+    "y": 200,
+    "fontSize": 64,
+    "color": "#FFFFFF"
   }
 }
