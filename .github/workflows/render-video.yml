@@ -50,13 +50,21 @@ jobs:
           fi
 
       - name: Install FFmpeg
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg jq
 
-      - name: Render video with FFmpeg
+      - name: Render video with text (FFmpeg)
         run: |
           cd work
+
+          TEXT=$(jq -r '.text.content' scene.json)
+          X=$(jq -r '.text.x' scene.json)
+          Y=$(jq -r '.text.y' scene.json)
+          SIZE=$(jq -r '.text.fontSize' scene.json)
+          COLOR=$(jq -r '.text.color' scene.json)
+
           ffmpeg -y \
             -f lavfi -i color=c=black:s=720x1280:d=10:r=30 \
+            -vf "drawtext=text='${TEXT}':x=${X}:y=${Y}:fontsize=${SIZE}:fontcolor=${COLOR}" \
             -pix_fmt yuv420p \
             output.mp4
 
