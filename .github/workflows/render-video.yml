@@ -16,20 +16,25 @@ jobs:
       - name: Detect job folder
         id: detect_job
         run: |
-          JOB_DIR=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^jobs/' | head -n 1 | cut -d/ -f1,2)
+          JOB_DIR=$(find jobs -mindepth 1 -maxdepth 1 -type d | head -n 1)
+          if [ -z "$JOB_DIR" ]; then
+            echo "Nenhuma pasta de job encontrada."
+            exit 1
+          fi
           echo "job_dir=$JOB_DIR" >> $GITHUB_OUTPUT
+          echo "Job detectado: $JOB_DIR"
 
       - name: Validate job
         run: |
-          if [ -z "${{ steps.detect_job.outputs.job_dir }}" ]; then
-            echo "Nenhum job encontrado."
+          if [ ! -f "${{ steps.detect_job.outputs.job_dir }}/job.zip" ]; then
+            echo "job.zip não encontrado."
             exit 1
           fi
 
       - name: Prepare workspace
         run: |
           mkdir -p work
-          cp ${{ steps.detect_job.outputs.job_dir }}/job.zip work/
+          cp "${{ steps.detect_job.outputs.job_dir }}/job.zip" work/
 
       - name: Unzip job
         run: |
