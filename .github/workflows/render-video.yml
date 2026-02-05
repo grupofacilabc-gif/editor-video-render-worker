@@ -67,7 +67,7 @@ EOF
 
           ffmpeg -y \
             -f lavfi -i color=c=black:s=720x1280:d=10:r=30 \
-            -vf "subtitles=text.srt:force_style='FontName=DejaVu Sans,FontSize=64,PrimaryColour=&HFFFFFF&,Alignment=8,MarginV=200'" \
+            -vf subtitles=text.srt \
             -pix_fmt yuv420p \
             output.mp4
 
