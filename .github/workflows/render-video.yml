@@ -56,7 +56,7 @@ jobs:
         run: |
           cd work
           ffmpeg -y \
-            -f lavfi -i color=c=black:s=360x640:d=10:r=30 \
+            -f lavfi -i color=c=black:s=720x1280:d=10:r=30 \
             -pix_fmt yuv420p \
             output.mp4
 
