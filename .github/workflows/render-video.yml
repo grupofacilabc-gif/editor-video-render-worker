@@ -59,11 +59,20 @@ jobs:
 
           TEXT=$(jq -r '.text.content' scene.json)
 
-          cat > text.srt <<EOF
-1
-00:00:00,000 --> 00:00:10,000
-$TEXT
-EOF
+                - name: Render video with subtitles (SAFE)
+        run: |
+          cd work
+
+          TEXT=$(jq -r '.text.content' scene.json)
+
+          printf "1\n00:00:00,000 --> 00:00:10,000\n%s\n" "$TEXT" > text.srt
+
+          ffmpeg -y \
+            -f lavfi -i color=c=black:s=720x1280:d=10:r=30 \
+            -vf subtitles=text.srt \
+            -pix_fmt yuv420p \
+            output.mp4
+
 
           ffmpeg -y \
             -f lavfi -i color=c=black:s=720x1280:d=10:r=30 \
