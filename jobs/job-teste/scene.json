@@ -1,0 +1,9 @@
+{
+  "version": "1.0",
+  "canvas": {
+    "width": 360,
+    "height": 640,
+    "fps": 30,
+    "duration": 10
+  }
+}
