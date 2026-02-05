@@ -1,0 +1,60 @@
+name: Render Video (FFmpeg)
+
+on:
+  push:
+    paths:
+      - "jobs/**"
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Detect job folder
+        id: detect_job
+        run: |
+          JOB_DIR=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep '^jobs/' | head -n 1 | cut -d/ -f1,2)
+          echo "job_dir=$JOB_DIR" >> $GITHUB_OUTPUT
+
+      - name: Validate job
+        run: |
+          if [ -z "${{ steps.detect_job.outputs.job_dir }}" ]; then
+            echo "Nenhum job encontrado."
+            exit 1
+          fi
+
+      - name: Prepare workspace
+        run: |
+          mkdir -p work
+          cp ${{ steps.detect_job.outputs.job_dir }}/job.zip work/
+
+      - name: Unzip job
+        run: |
+          cd work
+          unzip job.zip
+
+      - name: Validate scene.json
+        run: |
+          cd work
+          if [ ! -f scene.json ]; then
+            echo "scene.json não encontrado."
+            exit 1
+          fi
+
+      - name: Render video with FFmpeg
+        run: |
+          cd work
+          ffmpeg -y \
+            -f lavfi -i color=c=black:s=360x640:d=10:r=30 \
+            -pix_fmt yuv420p \
+            output.mp4
+
+      - name: Upload video artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: video-final
+          path: work/output.mp4
+          retention-days: 3
